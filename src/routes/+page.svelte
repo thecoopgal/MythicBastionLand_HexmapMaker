@@ -1,5 +1,5 @@
 <script lang="ts">
-  import { onMount, onError } from 'svelte';
+  import { onMount } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   
@@ -1300,10 +1300,6 @@
     } catch (error) {
       console.error('Error generating map:', error);
     }
-  });
-
-  onError((error) => {
-    console.error('Runtime error:', error);
   });
 </script>
 
