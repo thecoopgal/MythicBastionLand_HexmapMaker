@@ -296,15 +296,30 @@
   <h1 class="text-2xl font-bold mb-4">Hex Map Generator</h1>
   
   <div class="mb-4 flex flex-col gap-4">
-    <label>
-      Width: {width}
-      <input type="range" bind:value={width} min="1" max="24" class="range range-primary">
-    </label>
-    <label>
-      Height: {height}
-      <input type="range" bind:value={height} min="1" max="24" class="range range-primary">
-    </label>
-    <button class="btn btn-primary w-full" on:click={() => generateNewMap()}>
+    <div class="flex items-center gap-2">
+      <span>Width:</span>
+      <input 
+        type="number" 
+        class="input input-bordered w-24" 
+        bind:value={width}
+        min="1"
+        max="24"
+      >
+    </div>
+    <div class="flex items-center gap-2">
+      <span>Height:</span>
+      <input 
+        type="number" 
+        class="input input-bordered w-24" 
+        bind:value={height}
+        min="1"
+        max="24"
+      >
+    </div>
+    <button class="btn btn-primary w-full" on:click={() => {
+      const newSeed = Math.floor(Math.random() * 1000000000);
+      goto(`?seed=${newSeed}`, { keepFocus: true });
+    }}>
       Generate New Map
     </button>
     
