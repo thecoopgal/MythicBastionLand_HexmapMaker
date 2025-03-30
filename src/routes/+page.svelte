@@ -1,4 +1,5 @@
 <script lang="ts">
+  import { onMount, onError } from 'svelte';
   import { page } from '$app/stores';
   import { goto } from '$app/navigation';
   
@@ -1286,8 +1287,24 @@
 
   // Generate map when seed changes
   $: {
-    generateNewMap(currentSeed);
+    try {
+      generateNewMap(currentSeed);
+    } catch (error) {
+      console.error('Error in reactive map generation:', error);
+    }
   }
+
+  onMount(() => {
+    try {
+      generateNewMap(currentSeed);
+    } catch (error) {
+      console.error('Error generating map:', error);
+    }
+  });
+
+  onError((error) => {
+    console.error('Runtime error:', error);
+  });
 </script>
 
 <div class="flex flex-col items-center p-4">
