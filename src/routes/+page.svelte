@@ -1259,6 +1259,31 @@
     return newSettlements;
   }
 
+  function getHexTooltip(row: number, col: number): string {
+    let tooltip = `Terrain: ${terrainMap[row][col].name}`;
+    
+    // Check for settlement
+    const settlement = settlements.find(s => s.x === col && s.y === row);
+    if (settlement) {
+      tooltip += `\nSettlement: ${SETTLEMENT_TYPES[settlement.type].name}`;
+      if (settlement.seatOfPower) tooltip += ' (Seat of Power)';
+    }
+    
+    // Check for myth
+    const myth = myths.find(m => m.x === col && m.y === row);
+    if (myth) {
+      tooltip += `\nMyth: ${myth.name}`;
+    }
+    
+    // Check for landmark
+    const landmark = landmarks.find(l => l.x === col && l.y === row);
+    if (landmark) {
+      tooltip += `\nLandmark: ${LANDMARK_TYPES[landmark.type].name}`;
+    }
+    
+    return tooltip;
+  }
+
   // Generate map when seed changes
   $: {
     generateNewMap(currentSeed);
@@ -1320,12 +1345,14 @@
       {@const col = i % width}
       {@const row = Math.floor(i / width)}
       <g>
-        <!-- Filled hex -->
+        <!-- Filled hex with tooltip -->
         <path 
           d={getHexPath(hex.x + hexSize, hex.y + hexSize, [], true)} 
           fill={terrainMap[row][col].color}
           stroke="none"
-        />
+        >
+          <title>{getHexTooltip(row, col)}</title>
+        </path>
         <!-- Dotted borders -->
         <path 
           d={getDottedBorderPath(hex.x + hexSize, hex.y + hexSize)} 
@@ -1346,7 +1373,9 @@
           stroke="red" 
           stroke-width="3"
           stroke-linecap="round"
-        />
+        >
+          <title>Barrier</title>
+        </path>
       {/if}
     {/each}
     <!-- Draw all rivers -->
@@ -1358,7 +1387,9 @@
         stroke-width="6"
         stroke-linecap="round"
         stroke-linejoin="round"
-      />
+      >
+        <title>River</title>
+      </path>
     {/each}
     <!-- Draw all settlements -->
     {#each settlements as settlement}
@@ -1371,7 +1402,9 @@
             fill="none"
             stroke="red"
             stroke-width="2"
-          />
+          >
+            <title>{`${SETTLEMENT_TYPES[settlement.type].name} (Seat of Power)`}</title>
+          </circle>
         {/if}
         <text
           x={settlement.x * hexWidth + (settlement.y % 2) * (hexWidth / 2) + hexSize}
@@ -1379,6 +1412,7 @@
           text-anchor="middle"
           font-size="24"
         >
+          <title>{`${SETTLEMENT_TYPES[settlement.type].name}${settlement.seatOfPower ? ' (Seat of Power)' : ''}`}</title>
           {SETTLEMENT_TYPES[settlement.type].symbol}
         </text>
       </g>
@@ -1394,7 +1428,9 @@
           stroke="purple"
           stroke-width="2"
           stroke-dasharray="4,4"
-        />
+        >
+          <title>{myth.name}</title>
+        </circle>
         <text
           x={myth.x * hexWidth + (myth.y % 2) * (hexWidth / 2) + hexSize}
           y={myth.y * vertOffset + hexSize * 1.5}
@@ -1404,6 +1440,7 @@
           fill="purple"
           font-weight="bold"
         >
+          <title>{myth.name}</title>
           {index + 1}
         </text>
       </g>
@@ -1418,14 +1455,17 @@
           fill="none"
           stroke={LANDMARK_TYPES[landmark.type].color}
           stroke-width="2"
-        />
+        >
+          <title>{LANDMARK_TYPES[landmark.type].name}</title>
+        </circle>
         <text
-          x={landmark.x * hexWidth + (landmark.y % 2) * (hexWidth / 2) + hexSize}
+          x={landmark.x * hexWidth + (landmark.y % 2) * (hexWidth/2) + hexSize}
           y={landmark.y * vertOffset + hexSize * 1.5}
           text-anchor="middle"
           dominant-baseline="central"
           font-size="16"
         >
+          <title>{LANDMARK_TYPES[landmark.type].name}</title>
           {LANDMARK_TYPES[landmark.type].symbol}
         </text>
       </g>
